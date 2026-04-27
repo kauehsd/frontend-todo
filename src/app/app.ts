@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { Tarefa } from "./tarefa";
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,8 @@ export class App {
   protected readonly title = signal('TODOapp');
 
   arrayDeTarefas: Tarefa[] = [];
-  constructor() {
+
+  constructor(private http: HttpClient) {
     this.READ_tarefas();
   }
 
@@ -20,19 +22,14 @@ export class App {
     this.arrayDeTarefas.unshift(novaTarefa);
   }
 
-
   READ_tarefas() {
-    this.arrayDeTarefas = [
-      new Tarefa("Estudar Frameworks WEB", false),
-      new Tarefa("Comer Pizza", false),
-      new Tarefa("Ajudar meus pais", false)
-    ];
+    this.http.get<Tarefa[]>('https://backend-api-1vng.onrender.com/api/todos')
+      .subscribe((dados) => {
+        this.arrayDeTarefas = dados;
+      });
   }
-
 
   DELETE_tarefa(tarefaAserRemovida: Tarefa) {
     this.arrayDeTarefas.splice(this.arrayDeTarefas.indexOf(tarefaAserRemovida), 1);
   }
-
-
 }
